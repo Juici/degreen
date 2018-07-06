@@ -7,9 +7,18 @@ mod error;
 
 use std::process;
 
+use app::App;
 use error::Result;
 
 fn run() -> Result<bool> {
+    let app = App::new();
+    let matches = app.get_matches();
+
+    if let Some(shell) = matches.value_of("completions") {
+        App::new().gen_completions(shell.parse().unwrap());
+        return Ok(true);
+    }
+
     Ok(true)
 }
 
