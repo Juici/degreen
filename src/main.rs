@@ -2,11 +2,12 @@ extern crate clap;
 #[macro_use]
 extern crate pkg;
 
+mod app;
 mod error;
 
 use std::process;
 
-use error::{Error, Result};
+use error::Result;
 
 fn run() -> Result<bool> {
     Ok(true)
