@@ -12,7 +12,7 @@ license = "MIT"
 keywords = ["file", "degreen", "execute"]
 categories = ["command-line-utilities"]
 
-include = ["Cargo.toml", "src/**/*.rs", "README.md", "LICENSE"]
+include = ["Cargo.toml", "build.rs", "src/**/*.rs", "README.md", "LICENSE"]
 build = "build.rs"
 
 [dependencies]
