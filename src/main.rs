@@ -106,10 +106,33 @@ fn degreen_file(file: PathBuf, meta: Metadata, settings: &Settings) -> Result<bo
     let mut perms = meta.permissions();
     let mut mode: u32 = perms.mode();
 
+    if mode & 0o111 == 0 {
+        return Ok(true);
+    }
+
+    if let Some(ext) = file.extension() {
+        if let Some(ext) = ext.to_str() {
+            const SHELLS: [&str; 7] = ["sh", "bash", "zsh", "csh", "tcsh", "ksh", "fish"];
+
+            for shell in SHELLS.iter() {
+                if ext.eq_ignore_ascii_case(shell) {
+                    if settings.verbose {
+                        println!("'{}' looks like a '{}' shell script", file.display(), shell);
+                    }
+                    return Ok(false);
+                }
+            }
+        }
+    }
+
     let buf = {
         let mut fd = File::open(&file)?;
         let mut buf = [0; 4];
-        fd.read_exact(&mut buf)?;
+        match fd.read_exact(&mut buf) {
+            Ok(_) => (),
+            Err(ref err) if err.kind() == io::ErrorKind::UnexpectedEof => (),
+            Err(err) => return Err(err.into()),
+        }
         buf
     };
 
@@ -123,7 +146,7 @@ fn degreen_file(file: PathBuf, meta: Metadata, settings: &Settings) -> Result<bo
         return Ok(false);
     } else if buf[..2] == SHEBANG {
         if settings.verbose {
-            println!("'{}' looks like it has a shebang line", file.display());
+            println!("'{}' has a shebang line", file.display());
         }
         return Ok(false);
     }
@@ -134,7 +157,11 @@ fn degreen_file(file: PathBuf, meta: Metadata, settings: &Settings) -> Result<bo
     mode &= !0o111;
     perms.set_mode(mode);
 
-    fs::set_permissions(file, perms)?;
+    fs::set_permissions(&file, perms)?;
+
+    if settings.verbose {
+        println!("ok: {}", file.display());
+    }
 
     Ok(true)
 }
