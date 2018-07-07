@@ -1,0 +1,28 @@
+[package]
+name = "degreen"
+version = "0.1.0"
+authors = ["Juici <juicy66173@gmail.com>"]
+description = "A small tool for degreening files"
+
+homepage = "https://github.com/Juici/degreen-rs"
+repository = "https://github.com/Juici/degreen-rs"
+readme = "README.md"
+license = "MIT"
+
+keywords = ["file", "degreen", "execute"]
+categories = ["command-line-utilities"]
+
+include = ["Cargo.toml", "src/**/*.rs", "README.md", "LICENSE"]
+build = "build.rs"
+
+[dependencies]
+pkg = "1.1"
+
+[dependencies.clap]
+version = "2.32"
+default-features = false
+features = ["color", "suggestions", "wrap_help"]
+
+[build-dependencies.pkg]
+version = "1.1"
+features = ["build"]
