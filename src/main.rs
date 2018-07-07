@@ -12,12 +12,15 @@ use error::Result;
 
 fn run() -> Result<bool> {
     let app = App::new();
-    let matches = app.get_matches();
 
-    if let Some(shell) = matches.value_of("completions") {
-        App::new().gen_completions(shell.parse().unwrap());
+    if let Some(shell) = app.completion_shell() {
+        App::gen_completions(shell);
         return Ok(true);
     }
+
+    let settings = app.settings();
+
+    // TODO: actual functionality
 
     Ok(true)
 }
