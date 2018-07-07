@@ -7,6 +7,7 @@ pub type Result<T> = ::std::result::Result<T, Error>;
 pub enum Error {
     Io(::std::io::Error),
     Clap(::clap::Error),
+    Msg(String),
 }
 
 impl fmt::Display for Error {
@@ -15,6 +16,7 @@ impl fmt::Display for Error {
         match *self {
             Io(ref error) => write!(f, "{}", error),
             Clap(ref error) => write!(f, "{}", error),
+            Msg(ref s) => f.write_str(s),
         }
     }
 }
@@ -25,8 +27,15 @@ impl StdError for Error {
         match *self {
             Io(ref error) => Some(error),
             Clap(ref error) => Some(error),
+            _ => None,
         }
     }
+}
+
+#[macro_export]
+macro_rules! error {
+    ($fmt:expr) => (Err($crate::error::Error::Msg(format!($fmt))));
+    ($fmt:expr, $($arg:tt)*) => (Err($crate::error::Error::Msg(format!($fmt, $($arg)*))));
 }
 
 macro_rules! impl_from {
